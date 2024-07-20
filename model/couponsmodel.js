@@ -36,5 +36,18 @@ const couponModel = {
     });
     return couponData;
   },
+
+  async checkCoupon(couponbody) {
+    try {
+      couponData = await prisma.coupon.find({
+        where: {
+          name: couponbody.name,
+        },
+      });
+      return couponData;
+    } catch (error) {
+      return error;
+    }
+  },
 };
 module.exports = couponModel;
