@@ -10,8 +10,8 @@ datasource db {
 model User {
   id             Int             @id @default(autoincrement())
   email          String          @unique
-  address        String?
-  age            Int?
+  address        String? //not required 
+  age            Int? //not required
   dob            DateTime?
   isUser         Boolean         @default(true)
   uid            String          @unique
@@ -130,12 +130,28 @@ model TimeSlot {
   @@index([tourOptionId], map: "TimeSlot_tourOptionId_fkey")
 }
 
+model Continent {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  countries Country[] // One-to-many relation with Country
+}
+
+model Country {
+  CountryId   Int       @id @default(autoincrement())
+  name        String
+  continent   Continent @relation(fields: [continentId], references: [id])
+  continentId Int
+  cities      City[] // One-to-many relation with City
+}
+
 model City {
-  id       Int              @id @default(autoincrement())
-  CityId   Int?             @unique
-  CityName String
-  event    Eventdata[]
-  tours    Tourstaticdata[]
+  id        Int              @id @default(autoincrement())
+  CityId    Int?             @unique
+  CityName  String
+  country   Country          @relation(fields: [countryId], references: [CountryId])
+  countryId Int
+  event     Eventdata[]
+  tours     Tourstaticdata[]
 }
 
 model Tourtypes {
@@ -143,6 +159,7 @@ model Tourtypes {
   cityTourType String @unique
 }
 
+// continents and countries should be added , Tour Availabity month should added 
 model Tourstaticdata {
   id                        Int                 @id @default(autoincrement())
   tourId                    Int                 @unique
@@ -151,17 +168,17 @@ model Tourstaticdata {
   cityId                    Int
   cityName                  String
   tourName                  String              @unique
-  duration                  String
+  duration                  String // optional 
   imagePath                 String
-  cityTourTypeId            String
+  cityTourTypeId            String // it should be list 
   cityTourType              String
   contractId                Int
   recommended               Boolean
-  isPrivate                 Boolean
+  isPrivate                 Boolean //remove it
   isvisible                 Boolean             @default(true)
   isvisiblePopularTours     Boolean             @default(false)
   isvisibleReccomendedTours Boolean             @default(false)
-  isSlot                    Boolean
+  isSlot                    Boolean //by default make it false 
   isVendorTour              Boolean             @default(false)
   vendorUid                 String?
   vendor                    Roles?              @relation(fields: [vendorUid], references: [uid])
@@ -173,6 +190,9 @@ model Tourstaticdata {
 
   @@index([cityId], map: "Tourstaticdata_cityId_fkey")
 }
+
+// add start time - closing time optional 
+// add defalut markuo 
 
 model Tourstaticdatabyid {
   id                   Int            @id @default(autoincrement())
@@ -191,18 +211,18 @@ model Tourstaticdatabyid {
   importantInformation String         @db.LongText
   itenararyDescription String         @db.LongText
   usefulInformation    String         @db.LongText
-  childAge             String
-  infantAge            String
-  infantCount          Int
+  childAge             String // optional 
+  infantAge            String //optional 
+  infantCount          Int // optional 
   isSlot               Boolean
-  onlyChild            Boolean
+  onlyChild            Boolean //default it false 
   contractId           Int
-  startTime            String
+  startTime            String // optionl 
   meal                 String?
   googleMapUrl         String?
   tourExclusion        String?
   TourId               Int            @unique
-  cutOffhrs            Int?           @default(96)
+  cutOffhrs            Int?           @default(96) //make default (24)
   vendorUid            String? // added this to map it to bookings and vendor 
   isVendorTour         Boolean        @default(false)
   tourOption           TourOption[]
@@ -234,6 +254,9 @@ model TourPricing {
   tour           Tourstaticdata? @relation(fields: [tourId], references: [tourId], onDelete: Cascade)
 }
 
+// touroptios to be optional 
+// transfers are optional 
+// operations days 
 model TourOption {
   id                            Int                @id @default(autoincrement())
   tourId                        Int
@@ -400,6 +423,9 @@ model EventTypes {
   eventtype String @unique
 }
 
+// lincese number should be Company No.
+// continent also 
+// document needs to be changed 
 model Roles {
   id                    Int              @id @default(autoincrement())
   uid                   String           @unique

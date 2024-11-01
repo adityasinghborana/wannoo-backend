@@ -3,7 +3,6 @@ const router = express.Router();
 const path = require("path");
 const userController = require("../controller/usercontroller");
 const homepageController = require("../controller/homepageController");
-const cityController = require("../controller/citycontroller");
 const tourController = require("../controller/tourscontroller");
 const aboutController = require("../controller/aboutuscontroller");
 const eventController = require("../controller/eventconroller");
@@ -44,12 +43,6 @@ router.post("/addhomedata", homepageController.addAllData); //for admin
 // aboutrpage Routes
 router.get("/Aboutus", aboutController.getAllData); //for admin and user
 router.patch("/updateaboutdata", aboutController.updateAllData); //for admin
-
-// City Routes
-router.get(
-  "/fetch-countries-and-cities",
-  cityController.fetchCountriesAndCities
-); //for admin
 
 router.get("/cities", tourController.getAllData); //for admin and user
 router.get("/tours", tourController.getallTours); //for admin and user
