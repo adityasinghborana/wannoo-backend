@@ -1,12 +1,14 @@
+const express = require("express");
 const { PrismaClient } = require("@prisma/client");
+// Adjust the path as needed
+
 const prismaClient = new PrismaClient();
 
+// Tour User Module
 const AddTourUser = {
   async generateUniqueTourId() {
-    const existingIds = await prismaClient.Tourstaticdata.findMany({
-      select: {
-        tourId: true,
-      },
+    const existingIds = await prismaClient.tourstaticdata.findMany({
+      select: { tourId: true },
     });
 
     const existingIdSet = new Set(existingIds.map((idObj) => idObj.tourId));
@@ -20,10 +22,8 @@ const AddTourUser = {
   },
 
   async generateUniqueTourOptionId() {
-    const existingIds = await prismaClient.TourOption.findMany({
-      select: {
-        tourOptionId: true,
-      },
+    const existingIds = await prismaClient.tourOption.findMany({
+      select: { tourOptionId: true },
     });
 
     const existingOptionIdSet = new Set(
@@ -39,10 +39,8 @@ const AddTourUser = {
   },
 
   async generateUniqueTimeSlotId() {
-    const existingIds = await prismaClient.TimeSlot.findMany({
-      select: {
-        id: true,
-      },
+    const existingIds = await prismaClient.timeSlot.findMany({
+      select: { id: true },
     });
 
     const existingTimeSlotIdSet = new Set(existingIds.map((idObj) => idObj.id));
@@ -59,7 +57,7 @@ const AddTourUser = {
     try {
       const gtourId = await this.generateUniqueTourId();
 
-      const data = await prismaClient.Tourstaticdata.create({
+      await prismaClient.tourstaticdata.create({
         data: {
           tourId: gtourId,
           countryId: params.countryid,
@@ -71,36 +69,28 @@ const AddTourUser = {
           imagePath: params.imagepath,
           cityTourTypeId: params.citytourtypeid,
           cityTourType: params.citytourtype,
-          contractId: 300,
+          continent: params.continent,
           vendorUid: params.vendoruid,
           isVendorTour: params.isvendortour,
           recommended: params.isrecommended,
-          isPrivate: true,
           isSlot: params.isslot,
         },
       });
-      // need to be added in admin panel and
-      try {
-        const Tourprice = await prismaClient.TourPricing.create({
-          data: {
-            tourId: gtourId,
-            contractId: 300,
-            amount: params.amount,
-            adultPrice: params.adultprice,
-            childPrice: params.childprice,
-            infantPrice: params.infantprice,
-          },
-        });
-        console.log(data);
-      } catch (error) {
-        console.log(error);
-      }
 
-      const databyid = await prismaClient.Tourstaticdatabyid.create({
+      // Add TourPricing
+      await prismaClient.tourPricing.create({
+        data: {
+          tourId: gtourId,
+          amount: params.amount,
+        },
+      });
+
+      await prismaClient.tourstaticdatabyid.create({
         data: {
           TourId: gtourId,
           countryId: params.countryid,
           countryName: params.countryname,
+          continent: params.continent,
           cityId: params.cityid,
           cityName: params.cityname,
           tourName: params.tourname,
@@ -108,20 +98,19 @@ const AddTourUser = {
           imagePath: params.imagepath,
           cityTourTypeId: params.citytourtypeid,
           cityTourType: params.citytourtype,
-          contractId: params.contractid,
           isSlot: params.isslot,
-          tourDescription: params.tourdescription,
-          tourInclusion: params.tourinclusion,
-          tourShortDescription: params.shortdescription,
-          importantInformation: params.importantinformation,
-          itenararyDescription: params.itenararydescription,
-          usefulInformation: params.usefulinformation,
-          childAge: params.childage,
-          infantAge: params.infantage,
+          tourDescription: params.tourdescription || "none",
+          tourInclusion: params.tourinclusion || "none",
+          tourShortDescription: params.shortdescription || "none",
+          importantInformation: params.importantinformation || "none",
+          itenararyDescription: params.itenararydescription || "none",
+          usefulInformation: params.usefulinformation || "none",
+          childAge: params.childage || "0",
+          infantAge: params.infantage || "0",
           isVendorTour: params.isvendortour,
-          infantCount: params.infantcount,
-          onlyChild: params.isonlychild,
-          startTime: params.starttime,
+          infantCount: params.infantcount || 0,
+          onlyChild: params.isonlychild || false,
+          startTime: params.starttime || "",
           meal: params.meal,
           googleMapUrl: params.googlemapurl,
           tourExclusion: params.tourexclusion,
@@ -129,31 +118,28 @@ const AddTourUser = {
         },
       });
 
-      // Iterate over optionlist to create TourOption, OperationDay, and TimeSlot records
-      const tourOptionsList = await Promise.all(
+      // Iterate over optionlist to create TourOption and related entities
+      await Promise.all(
         params.optionlist.map(async (option) => {
-          const gtourOptionId = await this.generateUniqueTourOptionId(); // Generate a unique ID for each option
-
-          // Create TourOption
-          const createdTourOption = await prismaClient.TourOption.create({
+          const gtourOptionId = await this.generateUniqueTourOptionId();
+          const createdTourOption = await prismaClient.tourOption.create({
             data: {
               tourId: gtourId,
               tourOptionId: gtourOptionId,
               optionName: option.optionname,
-              childAge: option.childage,
-              infantAge: option.infantage,
-              optionDescription: option.optiondescription,
+              childAge: option.childage || "",
+              infantAge: option.infantage || "",
+              optionDescription: option.optiondescription || "",
               minPax: option.minpax,
               maxPax: option.maxpax,
-              duration: option.duration,
             },
           });
+          const touroptionid = createdTourOption.tourOptionId;
 
-          // Create OperationDay for each TourOption
-          const createdOperationDay = await prismaClient.OperationDay.create({
+          await prismaClient.operationDay.create({
             data: {
               tourId: gtourId,
-              tourOptionId: createdTourOption.id,
+              tourOptionId: touroptionid,
               monday: option.operationDays.monday,
               tuesday: option.operationDays.tuesday,
               wednesday: option.operationDays.wednesday,
@@ -165,15 +151,13 @@ const AddTourUser = {
           });
 
           // Create TimeSlot for each TourOption
-          const createdTimeSlots = await Promise.all(
+          await Promise.all(
             (option.timeSlots || []).map(async (timeSlot) => {
               const gtimeSlotId = await this.generateUniqueTimeSlotId();
-              const timeslotidstring = gtimeSlotId.toString();
-
-              return prismaClient.TimeSlot.create({
+              return prismaClient.timeSlot.create({
                 data: {
                   tourOptionId: createdTourOption.tourOptionId,
-                  timeSlotId: timeslotidstring,
+                  timeSlotId: gtimeSlotId.toString(),
                   timeSlot: timeSlot.timeSlot,
                   available: timeSlot.available,
                   adultPrice: timeSlot.adultPrice,
@@ -182,32 +166,48 @@ const AddTourUser = {
               });
             })
           );
-          const createdTourImagessList = await Promise.all(
-            params.imagepaths.map(async (ImagePath) => {
-              try {
-                const createdTourImagess =
-                  await prismaClient.TourImagess.createMany({
-                    data: {
-                      tourId: gtourId,
-                      imagePath: ImagePath,
-                    },
-                  });
-
-                return createdTourImagess;
-              } catch (error) {
-                console.error(`Error creating TourImagess: ${error}`);
-                throw error;
-              }
-            })
-          );
         })
       );
 
-      return { status: 200 };
-    } catch (e) {
-      return { status: 501, e };
-      console.log(e);
-      throw e; // It's a good practice to re-throw the error after logging it
+      // Save tour images
+      await Promise.all(
+        params.imagepaths.map(async (ImagePath) => {
+          try {
+            await prismaClient.tourImagess.create({
+              data: {
+                tourId: gtourId,
+                imagePath: ImagePath,
+              },
+            });
+          } catch (error) {
+            console.error(`Error creating TourImagess: ${error}`);
+          }
+        })
+      );
+      await Promise.all(
+        params.faqs.map(async (faq) => {
+          try {
+            await prismaClient.faq.create({
+              data: {
+                tourid: gtourId,
+                question: faq.question,
+                answer: faq.answer,
+              },
+            });
+          } catch (error) {
+            console.error(`Error creating TourImagess: ${error}`);
+          }
+        })
+      );
+
+      return {
+        status: 200,
+        message: "Tour user created successfully",
+        tourId: gtourId,
+      };
+    } catch (error) {
+      console.error("Error in createTourUser:", error);
+      throw new Error("Failed to create tour user");
     }
   },
 };

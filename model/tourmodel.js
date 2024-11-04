@@ -28,10 +28,11 @@ const tourmodel = {
   async gettourdata(tourId) {
     return await prisma.tourstaticdatabyid.findUnique({
       where: {
-        id: tourId,
+        TourId: parseInt(tourId, 10),
       },
       include: {
         tourImages: true,
+        faq: true,
       },
     });
   },
