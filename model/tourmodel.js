@@ -2,16 +2,23 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const tourmodel = {
-  async getallCity() {
-    return await prisma.City.findMany();
+  async getallCity(countryName) {
+    try {
+      console.log("Country Name:", countryName);
+
+      return await prisma.city.findMany({
+        where: {
+          country: {
+            name: countryName,
+          },
+        },
+      });
+    } catch (error) {
+      return error;
+    }
   },
   async CityTourTypes() {
-    const uniqueCityTourTypes = await prisma.tourstaticdata.findMany({
-      distinct: ["cityTourType"],
-      select: {
-        cityTourType: true,
-      },
-    });
+    const uniqueCityTourTypes = await prisma.tourtypes.findMany();
     return uniqueCityTourTypes;
   },
 

@@ -1,18 +1,15 @@
-const model = require('../model/createcity');
+const model = require("../model/createcity");
 
+const addCityController = {
+  async addCity(req, res) {
+    const body = req.body;
 
-const addCityController={
-    async addCity(req,res){
-        const name = req.body.name
-
-        try {
-           const data= await model.createCity(name);
-            return res.json({"result":data})
-        } catch (error) {
-           return res.json({"error":error}) ;
-        }
-
-
+    try {
+      const data = await model.createCity(body);
+      return res.json({ result: data });
+    } catch (error) {
+      return res.json({ error: error });
     }
-}
+  },
+};
 module.exports = addCityController;

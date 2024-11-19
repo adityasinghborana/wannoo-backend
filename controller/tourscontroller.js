@@ -3,7 +3,10 @@ const tourModel = require("../model/tourmodel");
 const tourController = {
   async getAllData(req, res) {
     try {
-      const data = await tourModel.getallCity(); // Adjusted method call
+      console.log(req.query);
+      const name = req.query.countryName;
+      console.log(name);
+      const data = await tourModel.getallCity(name); // Adjusted method call
       res.json(data);
     } catch (error) {
       console.error(error);

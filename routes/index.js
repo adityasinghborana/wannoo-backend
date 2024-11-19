@@ -25,6 +25,9 @@ const AddTourController = require("../controller/addtourcontroller");
 const Staticpage = require("../controller/staticpagescontroller");
 const addEventController = require("../controller/addeventcontroller");
 const couponsController = require("../controller/couponcontroller");
+const continentController = require("../controller/citymodelcontroller");
+const searchController = require("../controller/serachcontroller");
+const blogsController = require("../controller/blogscontroller");
 
 // User Routes
 router.get("/users", userController.getAllUsers); //for admin
@@ -91,6 +94,10 @@ router.post("/bookingdetail", Bookingcontroller.getBookingDetails);
 router.get("/allvendors", rolecontroller.fetchAllVendor);
 router.post("/vendor", rolecontroller.fetchVendor);
 router.post("/signupvendor", rolecontroller.signupVendor);
+// blogs
+router.post("/addblog", blogsController.postBlog);
+router.get("/blogs", blogsController.getBlogs);
+router.get("/blog", blogsController.getBlog);
 
 // create tourtypes
 router.post("/addtourtypes", tourtypescontroller.tourtype);
@@ -127,4 +134,8 @@ router.post("/createcoupons", couponsController.createCoupons);
 router.delete("/deletecoupon", couponsController.deleteCoupons);
 router.post("/checkcoupon", couponsController.checkCoupons);
 
+router.get("/continents", continentController.getContinent);
+router.get("/countries", continentController.getAllCountries);
+router.post("/createcountry", continentController.createCountries);
+router.get("/searchtours", searchController.search);
 module.exports = router;

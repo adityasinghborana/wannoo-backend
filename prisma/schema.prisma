@@ -19,6 +19,7 @@ model User {
   bookingResults BookingResult[]
   carts          Cart?
   orders         Order[]         @relation("UserToOrder")
+  favorites      FavoriteTour[]
 }
 
 model BookingDetail {
@@ -194,6 +195,7 @@ model Tourstaticdata {
   city                      City                @relation(fields: [cityId], references: [id], onDelete: Cascade)
   vendor                    Roles?              @relation(fields: [vendorUid], references: [uid])
   tourdetails               Tourstaticdatabyid?
+  favorites                 FavoriteTour[]
 
   @@index([cityId], map: "Tourstaticdata_cityId_fkey")
   @@index([vendorUid], map: "Tourstaticdata_vendorUid_fkey")
@@ -225,6 +227,7 @@ model Tourstaticdatabyid {
   startTime            String
   meal                 String?
   googleMapUrl         String?
+  Bookable             Boolean        @default(true)
   tourExclusion        String?
   TourId               Int            @unique
   cutOffhrs            Int?           @default(96)
@@ -526,4 +529,21 @@ model TransferTypes {
   id           Int    @unique @default(autoincrement())
   transferName String
   transferId   Int
+}
+
+model FavoriteTour {
+  id     Int            @id @default(autoincrement())
+  userId Int
+  tourId Int
+  user   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tour   Tourstaticdata @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, tourId], name: "user_tour_unique")
+}
+
+model Blogs {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
 }
