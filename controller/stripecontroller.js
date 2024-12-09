@@ -2,9 +2,10 @@ const paymentModel = require("../model/stripe");
 
 async function handleCreatePaymentIntent(req, res) {
   try {
-    const { UserId } = req.body;
-    console.log(UserId);
-    const clientSecret = await paymentModel.createPaymentIntent(UserId);
+    const data = req.body;
+    console.log(data)
+
+    const clientSecret = await paymentModel.createPaymentIntent(data);
     res.json({ clientSecret });
   } catch (error) {
     console.error(error);

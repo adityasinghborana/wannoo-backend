@@ -5,18 +5,20 @@ const routes = require("./routes");
 const path = require("path");
 
 app.use(
-  cors({
-    origin: "*",
-  })
+    cors({
+        origin: "*",
+    })
 );
 app.use(
-  "/public/uploads",
-  express.static(path.join(__dirname, "public/uploads"))
+    "/public/uploads",
+    express.static(path.join(__dirname, "public/uploads"))
 ); // to show static image file
 app.use(express.json());
 app.use("/", routes);
 
 const port = 3000;
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+    console.log(`Server is running on port ${port}`);
 });
+
+

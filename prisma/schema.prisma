@@ -8,18 +8,19 @@ datasource db {
 }
 
 model User {
-  id             Int             @id @default(autoincrement())
-  email          String          @unique
+  id             Int              @id @default(autoincrement())
+  email          String           @unique
   address        String?
   age            Int?
   dob            DateTime?
-  isUser         Boolean         @default(true)
-  uid            String          @unique
+  isUser         Boolean          @default(true)
+  uid            String           @unique
   username       String?
   bookingResults BookingResult[]
   carts          Cart?
-  orders         Order[]         @relation("UserToOrder")
-  favorites      FavoriteTour[]
+  orders         Order[]          @relation("UserToOrder")
+  favorites      FavoriteTour[]  // One-to-many: A user can have many favorite tours
+  itineraries    UserItinarary[]  // One-to-many: A user can have multiple itineraries
 }
 
 model BookingDetail {
@@ -531,15 +532,25 @@ model TransferTypes {
   transferId   Int
 }
 
+model UserItinarary {
+  id        Int           @id @default(autoincrement())
+  userId    Int
+  name      String
+  tourslist FavoriteTour[] // Defining a one-to-many relationship (a user itinerary can have many favorite tours)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade) // Linking to the User model
+}
+
 model FavoriteTour {
   id     Int            @id @default(autoincrement())
   userId Int
   tourId Int
   user   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   tour   Tourstaticdata @relation(fields: [tourId], references: [id], onDelete: Cascade)
-
+  itineraryId    Int?
+  itinerary      UserItinarary? @relation(fields: [itineraryId], references: [id], onDelete: Cascade) // Linking to UserItinarary
   @@unique([userId, tourId], name: "user_tour_unique")
 }
+
 
 model Blogs {
   id        Int      @id @default(autoincrement())

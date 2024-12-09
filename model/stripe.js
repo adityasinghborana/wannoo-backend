@@ -39,22 +39,27 @@ async function getCartAmountForUser(userId) {
   }
 }
 
-async function createPaymentIntent(userId) {
+async function createPaymentIntent(data) {
+
+  console.log(data)
   try {
-    const amount = await getCartAmountForUser(userId);
+    //const amount = await getCartAmountForUser(userId);
     const stripeSecretKey = await getStripeSecretKey();
     const stripeInstance = stripe(stripeSecretKey);
 
     // Ensure that amount is a valid number
-    const numericAmount = parseFloat(amount);
-    if (isNaN(numericAmount) || numericAmount <= 0) {
-      throw new Error("Invalid amount");
-    }
+    // const numericAmount = parseFloat(amount);
+    // if (isNaN(numericAmount) || numericAmount <= 0) {
+    //   throw new Error("Invalid amount");
+    // }
 
     // Create payment intent
     const paymentIntent = await stripeInstance.paymentIntents.create({
-      amount: amount * 100, // Convert to fils
-      currency: "AED",
+    
+      amount: data.amount * 100, // Convert to fils
+      currency: "USD",
+      receipt_email: data.email,
+      metadata: { name: data.name }
     });
     console.log(paymentIntent);
 

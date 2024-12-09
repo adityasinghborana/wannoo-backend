@@ -28,6 +28,8 @@ const couponsController = require("../controller/couponcontroller");
 const continentController = require("../controller/citymodelcontroller");
 const searchController = require("../controller/serachcontroller");
 const blogsController = require("../controller/blogscontroller");
+const itinararyController = require("../controller/itinararycontroller");
+const favTourController = require("../controller/favtourscontroller");
 
 // User Routes
 router.get("/users", userController.getAllUsers); //for admin
@@ -78,8 +80,7 @@ router.post(
 ); // for user and admin
 
 //apikey
-router.get("/apikey", apiKeyConroller.getRayanaApi);
-router.put("/updateapikey", apiKeyConroller.UpdateRayanaApi);
+
 router.get("/stripekey", apiKeyConroller.getStripeSecretApi);
 router.put("/updatestripekey", apiKeyConroller.UpdateStripeSecretApi);
 
@@ -138,4 +139,8 @@ router.get("/continents", continentController.getContinent);
 router.get("/countries", continentController.getAllCountries);
 router.post("/createcountry", continentController.createCountries);
 router.get("/searchtours", searchController.search);
+router.get("/itinarary", itinararyController.getUserItinarary);
+router.post("/createitinarary", itinararyController.createUserItinarary);
+router.get("/favtours", favTourController.getAllFavTour);
+
 module.exports = router;
