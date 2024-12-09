@@ -2,11 +2,11 @@ const {PrismaClient} = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const FavTourModel = {
-  async getUserFavTour () {
+  async getUserFavTour (req) {
     try {
       const data= await prisma.FavoriteTour.findMany({
         where: {
-            itineraryId: 1
+            itineraryId: parseInt(req.id)
         },
         include:{
             tour:true
