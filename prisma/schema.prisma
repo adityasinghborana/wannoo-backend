@@ -8,116 +8,34 @@ datasource db {
 }
 
 model User {
-  id             Int              @id @default(autoincrement())
-  email          String           @unique
-  address        String?
-  age            Int?
-  dob            DateTime?
-  isUser         Boolean          @default(true)
-  uid            String           @unique
-  username       String?
-  bookingResults BookingResult[]
-  carts          Cart?
-  orders         Order[]          @relation("UserToOrder")
-  favorites      FavoriteTour[]  
-  itineraries    UserItinarary[]  
+  id            Int             @id @default(autoincrement())
+  email         String          @unique
+  address       String?
+  age           Int?
+  dob           DateTime?
+  isUser        Boolean         @default(true)
+  uid           String          @unique
+  username      String?
+  bookingDetail BookingDetail[]
+  favorites     FavoriteTour[]
+  itineraries   UserItinarary[]
 }
 
 model BookingDetail {
-  id               Int           @id @default(autoincrement())
-  status           String
-  bookingId        Int           @unique
-  downloadRequired Boolean
-  serviceUniqueId  String
-  servicetype      String
-  prefix           String?
-  firstName        String?
-  lastName         String?
-  email            String?
-  mobile           String?
-  nationality      String?
-  message          String?
-  adult            Int?
-  child            Int?
-  infant           Int?
-  tourDate         String?
-  timeSlotId       Int?
-  startTime        String?
-  pickup           String?
-  adultRate        Float?
-  serviceTotal     Float?
-  tourOption       String?
-  tourname         String?
-  childRate        Float?
-  confirmationNo   String?
-  bookingResultId  Int
-  createdAt        DateTime      @default(now())
-  bookingResult    BookingResult @relation(fields: [bookingResultId], references: [id])
-
-  @@index([bookingResultId], map: "BookingDetail_bookingResultId_fkey")
-}
-
-model BookingResult {
-  id             Int             @id @default(autoincrement())
-  referenceNo    String          @unique
-  userId         String          @db.VarChar(255)
-  roleId         String?         @db.VarChar(255)
-  status         String          @default("Approved") @db.VarChar(255)
-  bookingDetails BookingDetail[]
-  role           Roles?          @relation(fields: [roleId], references: [uid])
-  user           User            @relation(fields: [userId], references: [uid])
-
-  @@index([roleId], map: "BookingResult_roleId_fkey")
-  @@index([userId], map: "BookingResult_userId_fkey")
-}
-
-model Cart {
-  id          Int              @id @default(autoincrement())
-  totalamount Float?
-  uniqueNo    Int?
-  userId      String           @unique
-  user        User             @relation(fields: [userId], references: [uid])
-  TourDetails CartTourDetail[]
-}
-
-model CartTourDetail {
-  id              Int     @id @default(autoincrement())
-  serviceUniqueId Int?
-  tourId          Int
-  optionId        Int
-  adult           Int
-  child           Int
-  infant          Int
-  tourDate        String
-  timeSlotId      Int
-  startTime       String
-  transferId      Int
-  pickup          String?
-  adultRate       Float
-  roleId          String?
-  serviceTotal    Float
-  cartId          Int
-  tourOption      String
-  tourname        String
-  childRate       Float
-  cart            Cart    @relation(fields: [cartId], references: [id])
-
-  @@index([cartId], map: "CartTourDetail_cartId_fkey")
-}
-
-model Order {
-  id       Int      @id @default(autoincrement())
-  age      Int
-  adults   Int
-  children Int
-  tourId   Int
-  amount   Float
-  date     DateTime
-  status   String   @default("Approved")
-  username String
-  user     User     @relation("UserToOrder", fields: [tourId], references: [id])
-
-  @@index([tourId], map: "Order_tourId_fkey")
+  id           Int            @id @default(autoincrement())
+  status       String
+  fullName     String
+  email        String
+  passengers   Int?
+  tourDate     String?
+  serviceTotal Float?
+  userId       String         @db.VarChar(255)
+  user         User           @relation(fields: [userId], references: [uid])
+  role         Roles?         @relation(fields: [roleId], references: [uid])
+  roleId       String?        @db.VarChar(255)
+  tourId       Int
+  tour         Tourstaticdata @relation(fields: [tourId], references: [id], name: "TourBookings")
+  createdAt    DateTime       @default(now())
 }
 
 model TimeSlot {
@@ -197,6 +115,7 @@ model Tourstaticdata {
   vendor                    Roles?              @relation(fields: [vendorUid], references: [uid])
   tourdetails               Tourstaticdatabyid?
   favorites                 FavoriteTour[]
+  bookingDetail             BookingDetail[]     @relation("TourBookings")
 
   @@index([cityId], map: "Tourstaticdata_cityId_fkey")
   @@index([vendorUid], map: "Tourstaticdata_vendorUid_fkey")
@@ -467,7 +386,7 @@ model Roles {
   document_other        String
   created_at            DateTime         @default(now())
   CompanyNumber         String
-  BookingResult         BookingResult[]
+  BookingDetail         BookingDetail[]
   Eventdata             Eventdata[]
   tours                 Tourstaticdata[]
 }
@@ -533,24 +452,22 @@ model TransferTypes {
 }
 
 model UserItinarary {
-  id        Int           @id @default(autoincrement())
+  id        Int            @id @default(autoincrement())
   userId    Int
   name      String
   tourslist FavoriteTour[] // Defining a one-to-many relationship (a user itinerary can have many favorite tours)
-  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade) // Linking to the User model
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade) // Linking to the User model
 }
 
 model FavoriteTour {
-  id     Int            @id @default(autoincrement())
-  userId Int
-  tourId Int
-  user   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tour   Tourstaticdata @relation(fields: [tourId], references: [id], onDelete: Cascade)
-  itineraryId    Int?
-  itinerary      UserItinarary? @relation(fields: [itineraryId], references: [id], onDelete: Cascade) // Linking to UserItinarary
- 
+  id          Int            @id @default(autoincrement())
+  userId      Int
+  tourId      Int
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tour        Tourstaticdata @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  itineraryId Int?
+  itinerary   UserItinarary? @relation(fields: [itineraryId], references: [id], onDelete: Cascade) // Linking to UserItinarary
 }
-
 
 model Blogs {
   id        Int      @id @default(autoincrement())
