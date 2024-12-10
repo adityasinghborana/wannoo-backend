@@ -142,5 +142,6 @@ router.get("/searchtours", searchController.search);
 router.get("/itinarary", itinararyController.getUserItinarary);
 router.post("/createitinarary", itinararyController.createUserItinarary);
 router.get("/favtours", favTourController.getAllFavTour);
+router.post("/addfavtours", favTourController.addFavTour);
 
 module.exports = router;

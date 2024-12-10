@@ -19,8 +19,8 @@ model User {
   bookingResults BookingResult[]
   carts          Cart?
   orders         Order[]          @relation("UserToOrder")
-  favorites      FavoriteTour[]  // One-to-many: A user can have many favorite tours
-  itineraries    UserItinarary[]  // One-to-many: A user can have multiple itineraries
+  favorites      FavoriteTour[]  
+  itineraries    UserItinarary[]  
 }
 
 model BookingDetail {
@@ -548,7 +548,7 @@ model FavoriteTour {
   tour   Tourstaticdata @relation(fields: [tourId], references: [id], onDelete: Cascade)
   itineraryId    Int?
   itinerary      UserItinarary? @relation(fields: [itineraryId], references: [id], onDelete: Cascade) // Linking to UserItinarary
-  @@unique([userId, tourId], name: "user_tour_unique")
+ 
 }
 
 
