@@ -6,7 +6,7 @@ const ItinararyController = {
     async getUserItinarary(req, res) {
 
         const body = req.body;
-        const data = await model.getUserItinarary();
+        const data = await model.getUserItinarary(body);
         return res.json(data);
 
     },
@@ -22,7 +22,19 @@ const ItinararyController = {
        } catch (error) {
         return res.json(error);
        }
-    }
+    },
+    async deleteUserItinarary(req, res) {
+
+        try {
+         const body = req.body;
+         console.log(body);
+         const data = await model.deleteUserItinerary(body);
+         return res.json(data);
+ 
+        } catch (error) {
+         return res.json(error);
+        }
+     }
 }
 
 module.exports = ItinararyController;

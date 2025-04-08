@@ -4,9 +4,7 @@ const prisma = new PrismaClient();
 const userModel = {
   async getAllUsers() {
     return await prisma.user.findMany({
-      include: {
-        orders: true,
-      },
+     
     });
   },
 
@@ -33,43 +31,36 @@ const userModel = {
       },
     });
   },
-  async deleteUser(email) {
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        email,
-      },
-    });
 
-    if (!existingUser) {
-      throw new Error("User not found");
-    }
+
+  async deleteUser(Uid) {
+    
 
     await prisma.user.delete({
       where: {
-        email,
+        uid:Uid,
       },
     });
 
     return { message: "User deleted successfully" };
   },
 
-  async checkUser(uid) {
-    return await prisma.User.findMany({
-      where: {
-        uid,
-      },
-      include: {
-     
-        orders:true,
-        carts:true,
-        },
+  async checkUser(Uid) {
+    const user = await prisma.User.findUnique({
+        where: { uid: Uid }
     });
-  },
 
-  async updateUser({ email, username }) {
+    if (!user) return []; // Return an empty array if user not found
+
+    return await prisma.User.findUnique({
+        where: { id: user.id }
+    });
+},
+
+  async updateUser(data) {
     const existingUser = await prisma.user.findFirst({
       where: {
-        email,
+        uid : data.uid,
       },
     });
 
@@ -79,14 +70,45 @@ const userModel = {
 
     return await prisma.user.update({
       where: {
-        email,
+        uid:data.uid,
       },
       data: {
-        username,
-        email,
+        username:data.username,
+        address:data.address,
+
+        
       },
     });
   },
+
+  async updateUserProfileImage(data) {
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        uid : data.uid,
+      },
+    });
+console.log(data)
+    if (!existingUser) {
+      throw new Error("User not found");
+    }
+
+   try{
+    return await prisma.user.update({
+      where: {
+        uid:data.uid,
+      },
+      data: {
+        profileImage:data.profileImageUrl
+        
+      },
+    
+    });
+
+   }catch(e){
+return e;
+   }
+  },
+
 };
 
 module.exports = userModel;

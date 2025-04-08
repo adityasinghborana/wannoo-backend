@@ -7,6 +7,15 @@ const RoleController = {
       data: vendorsData,
     });
   },
+  async UpdateVendor(req, res) {
+    const vendorsData = await RoleModel.vendorUpdate(req.body);
+    return res.json({
+      data: vendorsData,
+    });
+  },
+
+
+
   async fetchVendor(req, res) {
     const vendorId = req.body;
     try {

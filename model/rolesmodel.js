@@ -30,7 +30,6 @@ const RolesModel = {
           isApproved: false,
           age: vendordata.age,
           name: vendordata.name,
-          license_number: vendordata.license_number,
           country: vendordata.country,
           city: vendordata.city,
           services_description: vendordata.services_description,
@@ -40,6 +39,7 @@ const RolesModel = {
           vatDocument: vendordata.document_vat,
           bankDocument: vendordata.document_bank,
           created_at: new Date(), // You can omit this if you want to use the default value
+          CompanyNumber:vendordata.license_number
         },
       });
       console.log("Vendor signed up successfully");
@@ -47,5 +47,41 @@ const RolesModel = {
       console.error("Error signing up vendor:", error);
     }
   },
+
+  async vendorUpdate(vendordata) {
+    try {
+      await prisma.roles.update({
+
+        where:{
+uid:vendordata.uid
+        },
+        data: {
+          uid: vendordata.uid,
+          username: vendordata.username,
+          isAdmin: vendordata.isAdmin,
+          isVendor: vendordata.isVendor,
+          email: vendordata.email,
+          address: vendordata.address,
+          isApproved: vendordata.status,
+          age: vendordata.age,
+          name: vendordata.name,
+          country: vendordata.country,
+          city: vendordata.city,
+          services_description: vendordata.services_description,
+          mobile: vendordata.mobile,
+          document_tradelicense: vendordata.document_tradelicense,
+          document_other: vendordata.document_other,
+          vatDocument: vendordata.document_vat,
+          bankDocument: vendordata.document_bank,
+          created_at: new Date(), // You can omit this if you want to use the default value
+          CompanyNumber:vendordata.license_number
+        },
+      });
+      console.log("Vendor signed up successfully");
+    } catch (error) {
+      console.error("Error signing up vendor:", error);
+    }
+  },
+
 };
 module.exports = RolesModel;

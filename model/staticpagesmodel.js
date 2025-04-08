@@ -10,6 +10,19 @@ const GetStaticData = {
       console.log(e);
     }
   },
+
+  async GetPolicyData() {
+    try {
+      const data = await prisma.Policy.findFirst();
+      return data;
+    } catch (e) {
+      console.log(e);
+    }
+  },
+
+ 
+
+
   async GetContactUs() {
     console.log("hello");
     try {
@@ -84,6 +97,21 @@ const GetStaticData = {
       console.log(e);
     }
   },
+
+  async UpdatePolicyData(updatedData) {
+    try {
+      const data = await prisma.Policy.update({
+        where: { id: updatedData.id }, // Assuming id is the primary key
+        data: updatedData,
+      });
+      return data;
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  },
+
+
 };
 
 module.exports = GetStaticData;

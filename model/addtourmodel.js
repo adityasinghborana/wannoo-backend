@@ -73,7 +73,7 @@ const AddTourUser = {
           vendorUid: params.vendoruid,
           isVendorTour: params.isvendortour,
           recommended: params.isrecommended,
-          isSlot: params.isslot,
+      
         },
       });
 
@@ -98,20 +98,15 @@ const AddTourUser = {
           imagePath: params.imagepath,
           cityTourTypeId: params.citytourtypeid.toString(),
           cityTourType: params.citytourtype,
-          isSlot: params.isslot,
+      Bookable:params.Bookable,
           tourDescription: params.tourdescription || "none",
           tourInclusion: params.tourinclusion || "none",
           tourShortDescription: params.shortdescription || "none",
           importantInformation: params.importantinformation || "none",
           itenararyDescription: params.itenararydescription || "none",
           usefulInformation: params.usefulinformation || "none",
-          childAge: params.childage || "0",
-          infantAge: params.infantage || "0",
           isVendorTour: params.isvendortour,
-          infantCount: params.infantcount || 0,
-          onlyChild: params.isonlychild || false,
           startTime: params.starttime || "",
-          meal: params.meal,
           googleMapUrl: params.googlemapurl,
           tourExclusion: params.tourexclusion,
           vendorUid: params.vendoruid,
@@ -119,55 +114,7 @@ const AddTourUser = {
       });
 
       // Iterate over optionlist to create TourOption and related entities
-      await Promise.all(
-        params.optionlist.map(async (option) => {
-          const gtourOptionId = await this.generateUniqueTourOptionId();
-          const createdTourOption = await prismaClient.tourOption.create({
-            data: {
-              tourId: gtourId,
-              tourOptionId: gtourOptionId,
-              optionName: option.optionname,
-              childAge: option.childage || "",
-              infantAge: option.infantage || "",
-              optionDescription: option.optiondescription || "",
-              minPax: option.minpax,
-              maxPax: option.maxpax,
-            },
-          });
-          const touroptionid = createdTourOption.tourOptionId;
-
-          await prismaClient.operationDay.create({
-            data: {
-              tourId: gtourId,
-              tourOptionId: touroptionid,
-              monday: option.operationDays.monday,
-              tuesday: option.operationDays.tuesday,
-              wednesday: option.operationDays.wednesday,
-              thursday: option.operationDays.thursday,
-              friday: option.operationDays.friday,
-              saturday: option.operationDays.saturday,
-              sunday: option.operationDays.sunday,
-            },
-          });
-
-          // Create TimeSlot for each TourOption
-          await Promise.all(
-            (option.timeSlots || []).map(async (timeSlot) => {
-              const gtimeSlotId = await this.generateUniqueTimeSlotId();
-              return prismaClient.timeSlot.create({
-                data: {
-                  tourOptionId: createdTourOption.tourOptionId,
-                  timeSlotId: gtimeSlotId.toString(),
-                  timeSlot: timeSlot.timeSlot,
-                  available: timeSlot.available,
-                  adultPrice: timeSlot.adultPrice,
-                  childPrice: timeSlot.childPrice,
-                },
-              });
-            })
-          );
-        })
-      );
+    
 
       // Save tour images
       await Promise.all(

@@ -8,6 +8,8 @@ const BlogsModel = {
         data: {
           title: params.title,
           content: params.content,
+          imagePath:params.imagepath
+          
         },
       });
       return data;

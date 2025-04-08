@@ -20,6 +20,20 @@ const StaticPageController = {
       return res.json({ error: error });
     }
   },
+  async getPolicyData(req, res) {
+    try {
+      const data = await model.GetPolicyData();
+      console.log(data);
+
+      return res.json({ result:data});
+    } catch (error) {
+      console.log("hello");
+      return res.json({ error: error });
+    }
+  },
+
+
+
   async getExperiencesData(req, res) {
     try {
       const data = await model.getExperiences();
@@ -45,6 +59,17 @@ const StaticPageController = {
       return res.json({ error: error.message });
     }
   },
+
+  async updatePolicyData(req, res) {
+    try {
+      const updatedData = req.body; // Assumes updated data is sent in the request body
+      const data = await model.UpdatePolicyData(updatedData);
+      return res.json({ result: data });
+    } catch (error) {
+      return res.json({ error: error.message });
+    }
+  },
+
 
   async updateFooterData(req, res) {
     try {

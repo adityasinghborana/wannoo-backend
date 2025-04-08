@@ -16,6 +16,7 @@ model User {
   isUser        Boolean         @default(true)
   uid           String          @unique
   username      String?
+  profileImage String?
   bookingDetail BookingDetail[]
   favorites     FavoriteTour[]
   itineraries   UserItinarary[]
@@ -30,11 +31,11 @@ model BookingDetail {
   tourDate     String?
   serviceTotal Float?
   userId       String         @db.VarChar(255)
-  user         User           @relation(fields: [userId], references: [uid])
-  role         Roles?         @relation(fields: [roleId], references: [uid])
+  user         User           @relation(fields: [userId], references: [uid] ,onDelete: Cascade)
+  role         Roles?         @relation(fields: [roleId], references: [uid],onDelete: Cascade)
   roleId       String?        @db.VarChar(255)
   tourId       Int
-  tour         Tourstaticdata @relation(fields: [tourId], references: [id], name: "TourBookings")
+  tour         Tourstaticdata @relation(fields: [tourId], references: [tourId], name: "TourBookings",onDelete: Cascade)
   createdAt    DateTime       @default(now())
 }
 
@@ -46,7 +47,7 @@ model TimeSlot {
   available    Int
   adultPrice   Float
   childPrice   Float
-  tourOption   TourOption @relation(fields: [tourOptionId], references: [tourOptionId])
+  tourOption   TourOption @relation(fields: [tourOptionId], references: [tourOptionId] ,onDelete: Cascade)
 
   @@index([tourOptionId], map: "TimeSlot_tourOptionId_fkey")
 }
@@ -83,7 +84,7 @@ model City {
 model Tourtypes {
   id           Int    @id @default(autoincrement())
   cityTourType String @unique
-  image        String
+  image        String?
 }
 
 model Tourstaticdata {
@@ -106,16 +107,15 @@ model Tourstaticdata {
   isvisible                 Boolean             @default(true)
   isvisiblePopularTours     Boolean             @default(false)
   isvisibleReccomendedTours Boolean             @default(false)
-  isSlot                    Boolean
   isVendorTour              Boolean             @default(false)
   vendorUid                 String?
   coupons                   Coupon[]            @relation("Coupon")
   tourpricing               TourPricing?
   city                      City                @relation(fields: [cityId], references: [id], onDelete: Cascade)
   vendor                    Roles?              @relation(fields: [vendorUid], references: [uid])
-  tourdetails               Tourstaticdatabyid?
-  favorites                 FavoriteTour[]
-  bookingDetail             BookingDetail[]     @relation("TourBookings")
+  tourdetails               Tourstaticdatabyid?  
+  favorites                 FavoriteTour[] 
+  bookingDetail             BookingDetail[]     @relation("TourBookings" )
 
   @@index([cityId], map: "Tourstaticdata_cityId_fkey")
   @@index([vendorUid], map: "Tourstaticdata_vendorUid_fkey")
@@ -139,13 +139,7 @@ model Tourstaticdatabyid {
   importantInformation String         @db.LongText
   itenararyDescription String         @db.LongText
   usefulInformation    String         @db.LongText
-  childAge             String?
-  infantAge            String?
-  infantCount          Int
-  isSlot               Boolean
-  onlyChild            Boolean
   startTime            String
-  meal                 String?
   googleMapUrl         String?
   Bookable             Boolean        @default(true)
   tourExclusion        String?
@@ -155,7 +149,7 @@ model Tourstaticdatabyid {
   isVendorTour         Boolean        @default(false)
   tourImages           TourImagess[]
   tourOption           TourOption[]
-  tourstaticdata       Tourstaticdata @relation(fields: [TourId], references: [tourId], onDelete: Cascade)
+  tourstaticdata       Tourstaticdata @relation(fields: [TourId], references: [tourId] ,onDelete: Cascade)
   faq                  Faq[]
 }
 
@@ -164,7 +158,7 @@ model Faq {
   tourid             Int
   question           String?
   answer             String             @db.LongText
-  tourstaticdatabyid Tourstaticdatabyid @relation(fields: [tourid], references: [TourId], onDelete: Cascade)
+  tourstaticdatabyid  Tourstaticdatabyid @relation(fields: [tourid], references: [TourId], onDelete: Cascade)
 
   @@index([tourid], map: "Faq_tourid_fkey")
 }
@@ -180,7 +174,7 @@ model TourImagess {
 
 model TourPricing {
   id       Int            @id @default(autoincrement())
-  tourId   Int            @unique
+  tourId   Int          @unique
   amount   Float
   discount Float?
   tour     Tourstaticdata @relation(fields: [tourId], references: [tourId], onDelete: Cascade)
@@ -232,7 +226,7 @@ model Coupon {
   eventId  Int?
   tourId   Int?
   event    Eventdata?      @relation("Coupon", fields: [eventId], references: [id], onDelete: Cascade)
-  tour     Tourstaticdata? @relation("Coupon", fields: [tourId], references: [id])
+  tour     Tourstaticdata? @relation("Coupon", fields: [tourId], references: [tourId])
 
   @@index([eventId], map: "Coupon_eventId_fkey")
   @@index([tourId], map: "Coupon_tourId_fkey")
@@ -405,14 +399,11 @@ model Emailtemplate {
 
 model ContactUs {
   id           Int    @id @default(autoincrement())
-  Heading      String
-  Subheading   String
-  Subheading2  String
+
   Address      String
   mobilenumber String
   Email        String
-  Heading2     String
-  Imagepath    String
+ 
 }
 
 model Footer {
@@ -442,7 +433,7 @@ model FormSubmission {
   name         String
   email        String
   message      String
-  mobilenumber String
+  
 }
 
 model TransferTypes {
@@ -467,11 +458,17 @@ model FavoriteTour {
   tour        Tourstaticdata @relation(fields: [tourId], references: [id], onDelete: Cascade)
   itineraryId Int?
   itinerary   UserItinarary? @relation(fields: [itineraryId], references: [id], onDelete: Cascade) // Linking to UserItinarary
+  @@unique([userId, tourId, itineraryId])
 }
 
 model Blogs {
   id        Int      @id @default(autoincrement())
+  imagePath String  
   title     String
   content   String   @db.Text
   createdAt DateTime @default(now())
+}
+model Policy{
+id        Int      @id @default(autoincrement())
+content   String   @db.Text
 }

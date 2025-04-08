@@ -21,7 +21,7 @@ const couponModel = {
         name: couponbody.name,
         discount: couponbody.discount,
         type: couponbody.type,
-        eventId: couponbody.eventid,
+        ...(couponbody.eventid ? { eventId: couponbody.eventid } : {}),
         tourId: couponbody.tourid,
       },
     });

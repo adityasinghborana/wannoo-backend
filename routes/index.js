@@ -29,6 +29,7 @@ const searchController = require('../controller/serachcontroller')
 const blogsController = require('../controller/blogscontroller')
 const itinararyController = require('../controller/itinararycontroller')
 const favTourController = require('../controller/favtourscontroller')
+const editTourController = require('../controller/edittourcontroller')
 
 // User Routes
 router.get('/users', userController.getAllUsers) //for admin
@@ -36,6 +37,7 @@ router.post('/createusers', userController.createUser) //for admin and user
 router.delete('/deleteuser', userController.deleteUser) //for admin
 router.get('/checkuser', userController.checkUser) //for user
 router.put('/updateuser', userController.updateUser) // if you want change it to patch for admin and userpanel
+router.patch('/updateimage', userController.updateUserProfileImage) // if you want change it to patch for admin and userpanel
 
 // Homepage Routes
 router.get('/homepage', homepageController.getAllData) //for admin and user
@@ -53,6 +55,7 @@ router.get('/tours', tourController.getallTours) //for admin and user
 router.get('/tourtypes', tourController.getalltourtype) //for admin and user
 router.get('/tourdetails', tourController.gettoursData) //for admin and user
 router.get('/fetchprice', priceController.fetchprice) //for admin and user
+router.delete('/deletetour', tourController.deleteToursData)
 // City Routes
 
 router.get('/events', eventController.getallevents)
@@ -88,6 +91,7 @@ router.post('/bookingdetail', Bookingcontroller.getBookingDetails)
 router.get('/allvendors', rolecontroller.fetchAllVendor)
 router.post('/vendor', rolecontroller.fetchVendor)
 router.post('/signupvendor', rolecontroller.signupVendor)
+router.patch('/updatevendor', rolecontroller.UpdateVendor)
 // blogs
 router.post('/addblog', blogsController.postBlog)
 router.get('/blogs', blogsController.getBlogs)
@@ -97,6 +101,11 @@ router.get('/blog', blogsController.getBlog)
 router.post('/addtourtypes', tourtypescontroller.tourtype)
 router.post('/addtour', AddTourController.addTour)
 router.post('/addevent', addEventController.addEvent)
+router.put('/updatetourtypes/:id', tourtypescontroller.updateTourtype)
+router.delete('/deletetourtypes/:id', tourtypescontroller.deleteTourtype)
+
+//edit Tour
+router.patch('/edittour', editTourController.editTour)
 
 //add city
 router.put('/addcity', createcitycontroller.addCity)
@@ -110,6 +119,8 @@ router.get('/experiencesdata', Staticpage.getExperiencesData)
 router.patch('/updateexperiencesdata', Staticpage.updateExperiencesData)
 router.get('/footerdata', Staticpage.getFooterData)
 router.patch('/updatefooterdata', Staticpage.updateFooterData)
+router.patch('/updatepolicy', Staticpage.updatePolicyData)
+router.get('/policy', Staticpage.getPolicyData)
 
 //images
 
@@ -132,9 +143,11 @@ router.get('/continents', continentController.getContinent)
 router.get('/countries', continentController.getAllCountries)
 router.post('/createcountry', continentController.createCountries)
 router.get('/searchtours', searchController.search)
-router.get('/itinarary', itinararyController.getUserItinarary)
+router.post('/itinarary', itinararyController.getUserItinarary)
 router.post('/createitinarary', itinararyController.createUserItinarary)
+router.delete('/deleteitinarary', itinararyController.deleteUserItinarary)
 router.get('/favtours', favTourController.getAllFavTour)
 router.post('/addfavtours', favTourController.addFavTour)
+router.delete('/deletefavtours', favTourController.deleteFavTour)
 
 module.exports = router

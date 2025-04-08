@@ -18,6 +18,15 @@ const favTourController = {
     } catch (error) {
       return res.json(error)
     }
+  },
+  async deleteFavTour (req, res) {
+    try {
+      const data = req.body
+     const result= await model.deleteFavTour(data);
+     return res.json(result);
+    } catch (error) {
+      return res.json(error)
+    }
   }
 }
 module.exports = favTourController

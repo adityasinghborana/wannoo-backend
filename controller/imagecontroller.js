@@ -1,23 +1,48 @@
 const { PrismaClient } = require("@prisma/client");
 const allimageService = require("../model/allimageservice");
 const prisma = new PrismaClient();
+const deleteFile = require("../middlewares/mutlerdeletemiddleware");
 
 // Controller function for handling image upload
 
+// exports.uploadImage = async (req, res) => {
+//   try {
+//     if (!req.file) {
+//       return res.status(400).json({ error: "No file uploaded" });
+//     }
+
+//     const { originalname, path } = req.file;
+
+//     // Save image data to the database
+
+//     res.json({ message: "Image uploaded successfully", originalname, path });
+//   } catch (error) {
+//     console.error("Error uploading image:", error);
+//     res.status(500).json({ error: "Failed to upload image" });
+//   }
+// };
 exports.uploadImage = async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: "No file uploaded" });
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: "No files uploaded" });
     }
 
-    const { originalname, path } = req.file;
+    // Extract necessary info from each file
+    const uploadedFiles = req.files.map((file) => ({
+      originalname: file.originalname,
+      path: file.path,
+      filename: file.filename,
+    }));
 
-    // Save image data to the database
+    // You can save `uploadedFiles` info to your database if needed
 
-    res.json({ message: "Image uploaded successfully", originalname, path });
+    res.json({
+      message: "Images uploaded successfully",
+      files: uploadedFiles,
+    });
   } catch (error) {
-    console.error("Error uploading image:", error);
-    res.status(500).json({ error: "Failed to upload image" });
+    console.error("Error uploading images:", error);
+    res.status(500).json({ error: "Failed to upload images" });
   }
 };
 

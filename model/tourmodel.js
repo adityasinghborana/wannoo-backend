@@ -40,6 +40,8 @@ const tourmodel = {
       include: {
         tourImages: true,
         faq: true,
+        tourstaticdata:true
+        
       },
     });
   },
@@ -48,7 +50,7 @@ const tourmodel = {
   async deleteTourById(tourId) {
     try {
       // Delete tour static data
-      await prisma.Tourstaticdata.delete({
+     return  await prisma.Tourstaticdata.delete({
         where: { tourId: tourId },
       });
 

@@ -4,11 +4,15 @@ const {PrismaClient} = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const ItinararyModel = {
-    async getUserItinarary() {
+    async getUserItinarary(req) {
+        console.log(req.uid)
         try {
+            const user = await prisma.User.findUnique({
+                where: { uid: req.uid }
+            });
             return await prisma.userItinarary.findMany({
                 where: {
-                    userId: 1,
+                    userId: user.id,
                 },
             });
         } catch (error) {
@@ -18,9 +22,12 @@ const ItinararyModel = {
     },
     async createUserItinarary(req) {
         try {
+            const user = await prisma.User.findUnique({
+                where: { uid: req.uid }
+            });
             return await prisma.userItinarary.create({
                 data: {
-                    userId: 1,  // Add userId directly in the data
+                    userId: user.id,  // Add userId directly in the data
                     name: req.name,
                 }
             });
@@ -28,7 +35,27 @@ const ItinararyModel = {
             console.error("Error creating itinerary:", error);
             throw error;
         }
-    }
+    },
+
+
+    async deleteUserItinerary(req) {
+        try {
+            const userItinerary = await prisma.userItinarary.delete({
+                where: { id: req.id },
+            });
+    
+            return userItinerary;
+        } catch (error) {
+            console.error("Error deleting itinerary:", error);
+            
+            
+            }
+            
+            throw error;
+        
+    
+}
+    
     
 
 };

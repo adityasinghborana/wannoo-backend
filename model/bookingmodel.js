@@ -4,26 +4,43 @@ const prisma = new PrismaClient()
 
 const BookingModel = {
   async bookTours (body) {
-    const data = await prisma.bookingDetail.create({
-      data: {
-        fullName: body.fullName,
-        status:body.status,
-        email: body.email,
-        passengers: body.passengers,
-        tourDate: body.tourDate,
-        serviceTotal: body.serviceTotal,
-        userId: body.userId,
-        roleId: body.vendorUID,
-        tourId: body.tourId
-      }
-    })
+    try {
+const tour= await prisma.tourstaticdatabyid.findUnique({
+  where:{
+    TourId:body.tourId
+  },
 
-    return data
+})
+    
+
+      const data = await prisma.bookingDetail.create({
+        data: {
+          fullName: body.fullName,
+          status:body.status,
+          email: body.email,
+          passengers: body.passengers,
+          tourDate: body.tourDate,
+          serviceTotal: body.serviceTotal,
+          userId: body.userId,
+          roleId: tour.vendorUid,
+          tourId: body.tourId
+        }
+      })
+  console.log(data);
+      return data
+    } catch (error) {
+      console.log (error);
+    }
   },
 
   /// other apis models
   async getAllBookings () {
-    const bookings = await prisma.bookingDetail.findMany()
+    const bookings = await prisma.bookingDetail.findMany(
+
+      {
+        include:{role:true}
+      }
+    )
     return bookings
   },
 
@@ -48,7 +65,7 @@ const BookingModel = {
           userId: userId
         },
         include: {
-          user: true,
+          tour: true,
   
         }
       })
